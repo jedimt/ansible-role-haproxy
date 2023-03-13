@@ -1,0 +1,18 @@
+---
+# tasks file for ansible-role-kubernetes-haproxy
+
+- name: Install HAProxy
+  ansible.builtin.apt:
+    name:
+      - haproxy
+    state: present
+    update_cache: true
+    cache_valid_time: 3600
+
+- name: Customize haproxy.cfg
+  ansible.builtin.blockinfile:
+    path: /etc/haproxy/haproxy.cfg
+    block: "{{ lookup('ansible.builtin.template', 'haproxy.j2') }}"
+    insertafter: "errorfile 504 /etc/haproxy/errors/504.http"
+  tags: haproxy.cfg
+  notify: Restart HAProxy
